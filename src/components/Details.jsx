@@ -1,86 +1,99 @@
-import React, { useState, useEffect } from "react"; 
+import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 
 export const Details = () => {
+    
     const { type, id } = useParams();
-    const [data, setData] = useState(null); 
+    const [elemento, setElemento] = useState(null);
+    const [cargando, setCargando] = useState(true);
 
     useEffect(() => {
+        setCargando(true);
         
-        const apiType = type === "planets" ? "planets" : "people";
-
-        fetch(`https://www.swapi.tech/api/${apiType}/${id}`)
-            .then(res => res.json())
-            .then(data => {
-                if (data.result && data.result.properties) {
-                    setData(data.result.properties);
+        fetch(`https://www.swapi.tech/api/${type}/${id}`)
+            .then((res) => res.json())
+            .then((data) => {
+                if (data.result) {
+                    setElemento(data.result.properties);
                 }
+                setCargando(false);
             })
-            .catch(err => console.error(err));
+            .catch((err) => {
+                console.error("Error cargando detalles:", err);
+                setCargando(false);
+            });
     }, [type, id]);
 
+    if (cargando) {
+        return (
+            <div className="container text-center mt-5">
+                <div className="spinner-border text-warning" role="status">
+                    <span className="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        );
+    }
+
+    if (!elemento) {
+        return (
+            <div className="container text-center mt-5 text-white">
+                <h3>No se encontraron detalles para este elemento.</h3>
+                <Link to="/" className="btn btn-warning mt-3">Volver al Inicio</Link>
+            </div>
+        );
+    }
+
     return (
-        <div className="container mt-5">
-            {!data ? (
-                <div className="text-white text-center">Cargando detalles...</div>
-            ) : (
-                <div className="row bg-dark text-white p-4 rounded shadow-lg">
-                    
-                    <div className="col-md-6 d-flex align-items-center">
+        <div className="container mt-5 text-white">
+            <div className="card bg-dark border-secondary mb-3 shadow-lg p-4">
+                <div className="row g-0 align-items-center">
+                    <div className="col-md-4 text-center">
                         <img 
-                            src="https://starwars-visualguide.com/assets/img/placeholder.jpg" 
-                            className="img-fluid rounded border border-secondary w-100" 
-                            alt={data.name} 
+                            src="https://placeholder.pics/svg/400x400" 
+                            className="img-fluid rounded border border-secondary" 
+                            alt={elemento.name} 
                         />
                     </div>
-
-                    
-                    <div className="col-md-6 text-center pt-3">
-                        <h1 className="display-4 fw-bold text-warning">{data.name}</h1>
-                        <p className="fs-5 mt-3 text-light">
-                            {data.name} es una parte fundamental de la saga de Star Wars.
-                        </p>
-                    </div>
-
-                    
-                    <div className="row mt-4 py-3 border-top border-warning text-center text-warning fw-bold">
-                        {type === "people" ? (
-                            <>
-                                <div className="col border-end border-secondary">
-                                    <p className="text-muted small mb-1">Birth Year</p>
-                                    <p>{data.birth_year || "N/A"}</p>
-                                </div>
-                                <div className="col border-end border-secondary">
-                                    <p className="text-muted small mb-1">Gender</p>
-                                    <p>{data.gender || "N/A"}</p>
-                                </div>
-                                <div className="col">
-                                    <p className="text-muted small mb-1">Height</p>
-                                    <p>{data.height || "N/A"}</p>
-                                </div>
-                            </>
-                        ) : (
-                            <>
-                                <div className="col border-end border-secondary">
-                                    <p className="text-muted small mb-1">Climate</p>
-                                    <p>{data.climate || "N/A"}</p>
-                                </div>
-                                <div className="col border-end border-secondary">
-                                    <p className="text-muted small mb-1">Terrain</p>
-                                    <p>{data.terrain || "N/A"}</p>
-                                </div>
-                                <div className="col">
-                                    <p className="text-muted small mb-1">Population</p>
-                                    <p>{data.population || "N/A"}</p>
-                                </div>
-                            </>
-                        )}
+                    <div className="col-md-8">
+                        <div className="card-body px-4">
+                            <h1 className="card-title text-warning font-monospace mb-4">{elemento.name}</h1>
+                            <p className="card-text fs-5">
+                                Aquí puedes ver toda la información detallada procedente de los archivos de la galaxia sobre este espécimen o localización del universo Star Wars.
+                            </p>
+                        </div>
                     </div>
                 </div>
-            )}
 
-            <div className="mt-5 text-center">
-                <Link to="/" className="btn btn-outline-warning btn-lg px-5">Volver al Inicio</Link>
+                <hr className="border-warning my-4" />
+
+                
+                <div className="row text-center font-monospace text-warning">
+                    {type === "people" ? (
+                        <>
+                            <div className="col-6 col-md-2 mb-3"><strong>Height</strong><p className="text-white mt-1">{elemento.height} cm</p></div>
+                            <div className="col-6 col-md-2 mb-3"><strong>Mass</strong><p className="text-white mt-1">{elemento.mass} kg</p></div>
+                            <div className="col-6 col-md-2 mb-3"><strong>Hair Color</strong><p className="text-white mt-1">{elemento.hair_color}</p></div>
+                            <div className="col-6 col-md-2 mb-3"><strong>Skin Color</strong><p className="text-white mt-1">{elemento.skin_color}</p></div>
+                            <div className="col-6 col-md-2 mb-3"><strong>Eye Color</strong><p className="text-white mt-1">{elemento.eye_color}</p></div>
+                            <div className="col-6 col-md-2 mb-3"><strong>Birth Year</strong><p className="text-white mt-1">{elemento.birth_year}</p></div>
+                        </>
+                    ) : (
+                        <>
+                            <div className="col-6 col-md-2 mb-3"><strong>Climate</strong><p className="text-white mt-1">{elemento.climate}</p></div>
+                            <div className="col-6 col-md-2 mb-3"><strong>Population</strong><p className="text-white mt-1">{elemento.population}</p></div>
+                            <div className="col-6 col-md-2 mb-3"><strong>Orbital Period</strong><p className="text-white mt-1">{elemento.orbital_period} days</p></div>
+                            <div className="col-6 col-md-2 mb-3"><strong>Rotation Period</strong><p className="text-white mt-1">{elemento.rotation_period} hours</p></div>
+                            <div className="col-6 col-md-2 mb-3"><strong>Diameter</strong><p className="text-white mt-1">{elemento.diameter} km</p></div>
+                            <div className="col-6 col-md-2 mb-3"><strong>Terrain</strong><p className="text-white mt-1">{elemento.terrain}</p></div>
+                        </>
+                    )}
+                </div>
+                
+                <div className="text-end mt-3">
+                    <Link to="/" className="btn btn-outline-warning">
+                        Back to Home
+                    </Link>
+                </div>
             </div>
         </div>
     );
