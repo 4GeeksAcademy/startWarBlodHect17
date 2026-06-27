@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import useGlobalReducer from "../hooks/useGlobalReducer.jsx"; 
 import { Card } from "../components/Card.jsx";
 import { Planeta } from "../components/Planeta.jsx";
-import { Details } from "./components/Details.jsx";
+
 
 export const Home = () => {
     

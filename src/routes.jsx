@@ -9,7 +9,7 @@ import { Layout } from "./pages/Layout";
 import { Home } from "./pages/Home";
 import { Single } from "./pages/Single";
 import { Demo } from "./pages/Demo";
-import { Details } from "./components/Details.jsx";
+import { Details } from "./components/Details";
 
 export const router = createBrowserRouter(
     createRoutesFromElements(
